@@ -6,7 +6,7 @@ Full-stack multi-tenant application.
 
 - Frontend: React + Vite + Tailwind
 - Backend: Node.js + Express + TypeScript
-- Database: PostgreSQL (coming next)
+- Database: PostgreSQL
 
 ## Structure
 
