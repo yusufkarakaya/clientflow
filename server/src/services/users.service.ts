@@ -19,7 +19,7 @@ export const createUser = async (
   password: string,
 ) => {
   try {
-    const hashedPassword = await bcrypyt.hash(password, 10) // In a real app, you'd get this from the request body
+    const hashedPassword = await bcrypyt.hash(password, 10)
     const result = await pool.query(
       'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
       [name, email, hashedPassword],
