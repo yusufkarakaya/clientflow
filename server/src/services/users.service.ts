@@ -1,7 +1,20 @@
 import pool from '../db.js'
-import bcrypyt from 'bcrypt'
+import bcrypt from 'bcrypt'
 
-export const getAllUsers = async () => {
+export interface User {
+  id: number
+  name: string
+  email: string
+  created_at: Date
+}
+
+export interface NewUser {
+  name: string
+  email: string
+  password: string
+}
+
+export const getAllUsers = async (): Promise<User[]> => {
   try {
     const result = await pool.query(
       'SELECT id, name, email, created_at FROM users',
@@ -13,16 +26,12 @@ export const getAllUsers = async () => {
   }
 }
 
-export const createUser = async (
-  name: string,
-  email: string,
-  password: string,
-) => {
+export const createUser = async (user: NewUser): Promise<User> => {
   try {
-    const hashedPassword = await bcrypyt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(user.password, 10)
     const result = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-      [name, email, hashedPassword],
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, created_at',
+      [user.name, user.email, hashedPassword],
     )
     return result.rows[0]
   } catch (error) {

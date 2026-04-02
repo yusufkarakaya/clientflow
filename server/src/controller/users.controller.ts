@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express'
+import { getAllUsers, createUser } from '../services/users.service.js'
+import type { NewUser } from '../services/users.service.js'
 
-import { getAllUsers } from '../services/users.service.js'
-import { createUser } from '../services/users.service.js'
-
+// GET /users
 export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await getAllUsers()
@@ -13,8 +13,10 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 }
 
+// POST /users
 export const addUser = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body
+  const { name, email, password } = req.body as NewUser
+
   if (!name || !email || !password) {
     return res
       .status(400)
@@ -22,7 +24,7 @@ export const addUser = async (req: Request, res: Response) => {
   }
 
   try {
-    const newUser = await createUser(name, email, password)
+    const newUser = await createUser({ name, email, password })
     res.status(201).json(newUser)
   } catch (error) {
     console.error('Error creating user', error)
