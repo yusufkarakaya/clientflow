@@ -5,6 +5,7 @@ export interface User {
   id: number
   name: string
   email: string
+  system_role: string
   created_at: Date
 }
 
@@ -17,7 +18,7 @@ export interface NewUser {
 export const getAllUsers = async (): Promise<User[]> => {
   try {
     const result = await pool.query(
-      'SELECT id, name, email, created_at FROM users',
+      'SELECT id, name, email, system_role, created_at FROM users',
     )
     return result.rows
   } catch (error) {
@@ -30,7 +31,7 @@ export const createUser = async (user: NewUser): Promise<User> => {
   try {
     const hashedPassword = await bcrypt.hash(user.password, 10)
     const result = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, created_at',
+      'INSERT INTO users (name, email, system_role, password) VALUES ($1, $2, $3, $4) RETURNING id, name, email, system_role, created_at',
       [user.name, user.email, hashedPassword],
     )
     return result.rows[0]
