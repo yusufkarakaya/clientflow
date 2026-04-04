@@ -1,6 +1,11 @@
 import type { Request, Response } from 'express'
-import { getAllUsers, createUser } from '../services/users.service.js'
 import type { NewUser } from '../services/users.service.js'
+
+import {
+  getAllUsers,
+  createUser,
+  getUserByEmail,
+} from '../services/users.service.js'
 
 // GET /users
 export const getUsers = async (req: Request, res: Response) => {
@@ -28,6 +33,30 @@ export const addUser = async (req: Request, res: Response) => {
     res.status(201).json(newUser)
   } catch (error) {
     console.error('Error creating user', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+// Post/login
+
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' })
+  }
+
+  try {
+    const user = await getUserByEmail(email)
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' })
+    }
+
+    // Here you would typically compare the hashed password and generate a token
+    // For simplicity, we will just return the user data
+    res.json(user)
+  } catch (error) {
+    console.error('Error logging in user', error)
     res.status(500).json({ error: 'Internal Server Error' })
   }
 }

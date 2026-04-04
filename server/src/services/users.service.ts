@@ -40,3 +40,16 @@ export const createUser = async (user: NewUser): Promise<User> => {
     throw new Error('Internal Server Error')
   }
 }
+
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    const result = await pool.query(
+      'SELECT id, name, email, system_role, created_at FROM users WHERE email = $1',
+      [email],
+    )
+    return result.rows[0] || null
+  } catch (error) {
+    console.error('Error executing query', error)
+    throw new Error('Internal Server Error')
+  }
+}
