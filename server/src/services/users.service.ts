@@ -13,6 +13,11 @@ export interface NewUser {
   name: string
   email: string
   password: string
+  system_role: string
+}
+
+export interface UserWithPassword extends User {
+  password: string
 }
 
 export const getAllUsers = async (): Promise<User[]> => {
@@ -32,7 +37,7 @@ export const createUser = async (user: NewUser): Promise<User> => {
     const hashedPassword = await bcrypt.hash(user.password, 10)
     const result = await pool.query(
       'INSERT INTO users (name, email, system_role, password) VALUES ($1, $2, $3, $4) RETURNING id, name, email, system_role, created_at',
-      [user.name, user.email, hashedPassword],
+      [user.name, user.email, user.system_role, hashedPassword],
     )
     return result.rows[0]
   } catch (error) {
@@ -41,10 +46,12 @@ export const createUser = async (user: NewUser): Promise<User> => {
   }
 }
 
-export const getUserByEmail = async (email: string): Promise<User | null> => {
+export const getUserByEmail = async (
+  email: string,
+): Promise<UserWithPassword | null> => {
   try {
     const result = await pool.query(
-      'SELECT id, name, email, system_role, created_at FROM users WHERE email = $1',
+      'SELECT id, name, email, system_role, password, created_at FROM users WHERE email = $1',
       [email],
     )
     return result.rows[0] || null
