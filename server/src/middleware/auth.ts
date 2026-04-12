@@ -7,6 +7,11 @@ export const authenticateToken = (
   next: NextFunction,
 ) => {
   const authHeader = req.headers['authorization']
+
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Authorization header is missing' })
+  }
+
   const token = authHeader && authHeader.split(' ')[1]
 
   if (!token) {
@@ -17,7 +22,7 @@ export const authenticateToken = (
     if (err) {
       return res.status(403).json({ error: 'Invalid access token' })
     }
-    ;(req as any).user = user
+    req.user = user
     next()
   })
 }
