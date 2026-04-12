@@ -1,4 +1,8 @@
 import bcrypt from 'bcrypt'
+import dotenv from 'dotenv'
+dotenv.config()
+
+import jwt from 'jsonwebtoken'
 
 import type { Request, Response } from 'express'
 import type { NewUser, UserWithPassword } from '../services/users.service.js'
@@ -24,6 +28,8 @@ export const getUsers = async (req: Request, res: Response) => {
 export const addUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body as NewUser
 
+  const hashedPassword = await bcrypt.hash(password, 10)
+
   if (!name || !email || !password) {
     return res
       .status(400)
@@ -34,7 +40,7 @@ export const addUser = async (req: Request, res: Response) => {
     const newUser = await createUser({
       name,
       email,
-      password,
+      password: hashedPassword,
       system_role: 'user',
     })
     res.status(201).json(newUser)
@@ -62,10 +68,16 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Invalid email or password' })
     }
+    const token = jwt.sign(
+      { email: user.email, system_role: user.system_role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1h' },
+    )
     res.json({
       name: user.name,
       email: user.email,
       system_role: user.system_role,
+      token,
     })
   } catch (error) {
     console.error('Error logging in user', error)
