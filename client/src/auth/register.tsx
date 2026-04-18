@@ -2,7 +2,8 @@ import React from 'react'
 
 import { useState } from 'react'
 
-export const Login: React.FC = () => {
+export const Register: React.FC = () => {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -11,26 +12,26 @@ export const Login: React.FC = () => {
     e.preventDefault()
 
     try {
-      const response = await fetch('/api/users/login', {
+      const response = await fetch('/api/users/createUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       })
 
       if (response.ok) {
         setError(null)
         const data = await response.json()
-        console.log('Login successful:', data)
-        // Store the token in localStorage or context
+        console.log('Registration successful:', data)
+        // Optionally, redirect to login page or store token
       } else {
-        setError('Invalid email or password. Please try again.')
+        setError('Registration failed. Please try again.')
         const errorData = await response.json()
-        console.error('Login failed:', errorData)
+        console.error('Registration failed:', errorData)
       }
     } catch (error) {
-      console.error('Error during login:', error)
+      console.error('Error during registration:', error)
     }
   }
 
@@ -38,7 +39,7 @@ export const Login: React.FC = () => {
     <div className="min-h-screen justify-center items-center flex flex-col min-w-full bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-2xl p-6 shadow-lg">
         <h1 className="text-2xl font-bold text-center mb-6 text-(--text-100) ">
-          Welcome Back
+          Create an Account
         </h1>
         <div>
           {error && (
@@ -49,6 +50,16 @@ export const Login: React.FC = () => {
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
+            <label htmlFor="username" className="text-sm font-medium block mb-1">Username</label>
+            <input
+            className="block border  w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-(--accent-200)"
+            type="text"
+            id="username"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div>
             <label className="text-sm font-medium block mb-1" htmlFor="email">
               Email
             </label>
@@ -58,44 +69,44 @@ export const Login: React.FC = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
             />
           </div>
-
           <div>
-            <label htmlFor="password">Password</label>
+            <label
+              className="text-sm font-medium block mb-1"
+              htmlFor="password"
+            >
+              Password
+            </label>
             <input
-              className="block border w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-(--accent-200)"
+              className="block border  w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-(--accent-200)"
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="********"
-              required
             />
           </div>
-
           <button
-            className="bg-(--primary-100) hover:bg-(--primary-200) transition text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-(--primary-200) cursor-pointer w-full"
+            className="w-full bg-(--primary-100) text-white py-2 rounded-md hover:bg-(--primary-200) transition-colors cursor-pointer"
             type="submit"
           >
-            Login bro
+            Register
           </button>
-
-          <div>
-            <p className="text-sm text-center">
-              Don't have an account?{' '}
-              <a
-                href="/register"
-                className="text-(--accent-200) hover:underline cursor-pointer"
-              >
-                Register here
-              </a>
-            </p>
-          </div>
         </form>
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <a
+              href="/login"
+              className="text-(--accent-200) hover:underline cursor-pointer"
+            >
+              Login here
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   )
 }
+
+export default Register

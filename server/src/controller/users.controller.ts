@@ -24,7 +24,7 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 }
 
-// POST /users
+// POST /Register
 export const addUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body as NewUser
 
