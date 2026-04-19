@@ -22,7 +22,8 @@ export const authenticateToken = (
     if (err) {
       return res.status(403).json({ error: 'Invalid access token' })
     }
-    req.user = user
+    req.user = req.cookies.token
+    // req.user = user
     next()
   })
 }

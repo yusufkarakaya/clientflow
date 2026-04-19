@@ -34,10 +34,9 @@ export const getAllUsers = async (): Promise<User[]> => {
 
 export const createUser = async (user: NewUser): Promise<User> => {
   try {
-    const hashedPassword = await bcrypt.hash(user.password, 10)
     const result = await pool.query(
       'INSERT INTO users (name, email, system_role, password) VALUES ($1, $2, $3, $4) RETURNING id, name, email, system_role, created_at',
-      [user.name, user.email, user.system_role, hashedPassword],
+      [user.name, user.email, user.system_role, user.password],
     )
     return result.rows[0]
   } catch (error) {

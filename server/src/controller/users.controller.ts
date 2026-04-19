@@ -28,18 +28,18 @@ export const getUsers = async (req: Request, res: Response) => {
 export const addUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body as NewUser
 
-  const hashedPassword = await bcrypt.hash(password, 10)
-
   if (!name || !email || !password) {
     return res
       .status(400)
       .json({ error: 'Name, email, and password are required' })
   }
 
+  const hashedPassword = await bcrypt.hash(password, 10)
+
   try {
     const newUser = await createUser({
       name,
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
       system_role: 'user',
     })
@@ -59,7 +59,7 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 
   try {
-    const user = await getUserByEmail(email)
+    const user = await getUserByEmail(email.toLowerCase())
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' })
     }
@@ -73,11 +73,19 @@ export const loginUser = async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: '1h' },
     )
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 60, // 1 hour
+    })
+
     res.json({
       name: user.name,
       email: user.email,
       system_role: user.system_role,
-      token,
+      // token,
     })
   } catch (error) {
     console.error('Error logging in user', error)

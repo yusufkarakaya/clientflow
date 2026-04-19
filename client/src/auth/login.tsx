@@ -16,6 +16,7 @@ export const Login: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       })
 
@@ -23,7 +24,6 @@ export const Login: React.FC = () => {
         setError(null)
         const data = await response.json()
         console.log('Login successful:', data)
-        // Store the token in localStorage or context
       } else {
         setError('Invalid email or password. Please try again.')
         const errorData = await response.json()
