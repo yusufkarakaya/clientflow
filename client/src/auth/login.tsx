@@ -2,7 +2,13 @@ import React from 'react'
 
 import { useState } from 'react'
 
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+
 export const Login: React.FC = () => {
+  const navigate = useNavigate()
+  const { login } = useAuth()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -22,8 +28,8 @@ export const Login: React.FC = () => {
 
       if (response.ok) {
         setError(null)
-        const data = await response.json()
-        console.log('Login successful:', data)
+        login()
+        navigate('/dashboard')
       } else {
         setError('Invalid email or password. Please try again.')
         const errorData = await response.json()

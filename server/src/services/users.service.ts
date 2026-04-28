@@ -1,5 +1,4 @@
 import pool from '../db.js'
-import bcrypt from 'bcrypt'
 
 export interface User {
   id: number
@@ -52,6 +51,19 @@ export const getUserByEmail = async (
     const result = await pool.query(
       'SELECT id, name, email, system_role, password, created_at FROM users WHERE email = $1',
       [email],
+    )
+    return result.rows[0] || null
+  } catch (error) {
+    console.error('Error executing query', error)
+    throw new Error('Internal Server Error')
+  }
+}
+
+export const getMe = async (id: number): Promise<User | null> => {
+  try {
+    const result = await pool.query(
+      'SELECT id, name, email, system_role, created_at FROM users WHERE id = $1',
+      [id],
     )
     return result.rows[0] || null
   } catch (error) {

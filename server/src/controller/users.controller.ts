@@ -11,6 +11,7 @@ import {
   getAllUsers,
   createUser,
   getUserByEmail,
+  getMe,
 } from '../services/users.service.js'
 
 // GET /users
@@ -91,4 +92,30 @@ export const loginUser = async (req: Request, res: Response) => {
     console.error('Error logging in user', error)
     res.status(500).json({ error: 'Internal Server Error' })
   }
+}
+
+export const logoutUser = (req: Request, res: Response) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+  })
+  res.json({ message: 'Logged out successfully' })
+}
+
+export const getUserInfo = async (req: Request, res: Response) => {
+  try {
+    const user = await getMe(req.user!.id)
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+    res.json(user)
+  } catch (error) {
+    console.error('Error fetching user info', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const AdminDashboard = (req: Request, res: Response) => {
+  res.json({ message: 'Welcome to the admin dashboard!' })
 }

@@ -24,7 +24,7 @@ export const Register: React.FC = () => {
         setError(null)
         const data = await response.json()
         console.log('Registration successful:', data)
-        // Optionally, redirect to login page or store token
+        window.location.href = '/login'
       } else {
         setError('Registration failed. Please try again.')
         const errorData = await response.json()
@@ -50,13 +50,18 @@ export const Register: React.FC = () => {
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="username" className="text-sm font-medium block mb-1">Username</label>
+            <label
+              htmlFor="username"
+              className="text-sm font-medium block mb-1"
+            >
+              Username
+            </label>
             <input
-            className="block border  w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-(--accent-200)"
-            type="text"
-            id="username"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+              className="block border  w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-(--accent-200)"
+              type="text"
+              id="username"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div>
